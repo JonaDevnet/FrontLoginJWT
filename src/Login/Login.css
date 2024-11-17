@@ -1,0 +1,80 @@
+
+.form {
+    margin: 15rem 5rem 0rem 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-shadow: 1px -1px 7px -1px rgba(0,0,0,1);
+    border-radius: 2rem;
+    font-family: "Doto", sans-serif;
+    
+}
+.form-text h3{
+    text-align: center;
+    max-width: 600px !important;
+    padding: 2rem;
+    font-size: 4rem;
+    font-family: "Doto", sans-serif;
+}
+.form-cont-campos {
+    width: 90%;
+    padding: 2rem;
+}
+.form-cont-campos {
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 750px;
+    flex-direction: column;
+    border-radius: 2rem;
+}
+.form-cont-campo {
+    background-color: white;
+    margin: 3rem 0rem;
+    max-width: 700px;
+    width: 80%;
+    margin-top: 3rem;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 3rem;
+}
+.form-cont-campo input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    outline: none;
+    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
+    text-align: center;
+}
+.form--button {
+    padding: 1rem 2.5rem;
+    outline: none;
+    border: none;
+    border-radius: 2rem;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: 0.2s;
+    align-items: center;
+    justify-content: center;
+}
+.form--button:hover {
+    background-color: rgb(141, 141, 141);
+    color: white;
+}
+
+.form a {
+    text-align: center;
+    min-width: 190px ;
+    font-weight: 500;
+    text-decoration: none;
+    color: #47474779;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.form a:hover {
+    color: #33354eb7;
+}

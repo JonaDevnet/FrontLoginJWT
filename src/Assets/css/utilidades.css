@@ -1,0 +1,4 @@
+.contenedor {
+    max-width: 100rem;
+    margin: 0 auto; /* centrar contenido */
+}
