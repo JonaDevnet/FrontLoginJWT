@@ -1,5 +1,6 @@
 import React from "react";
-import './Login.css';
+import './Login.css'
+import { Link } from "react-router-dom";
 
 export const Login: React.FC = () => {
     return (
@@ -24,7 +25,7 @@ export const Login: React.FC = () => {
                          />
                 </div>
                 <button className="form--button">Ingresar</button><br />
-                <a href="#">Registrarse</a>
+                <Link to="/registrarse"> Registrarse</Link>
             </form>
         </div>
     )
