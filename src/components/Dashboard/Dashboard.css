@@ -1,0 +1,13 @@
+.dashboard {
+    width:auto; 
+    height: auto; 
+    padding: 2rem;
+    margin: 5rem;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 700;
+}
+.dashboard--table{
+    padding: 1rem;
+    font-weight:  700;
+}

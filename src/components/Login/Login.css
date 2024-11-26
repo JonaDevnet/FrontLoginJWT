@@ -1,8 +1,8 @@
 
 .form {
-    width: 400px; /* Ancho fijo */
+    width: 500px; /* Ancho fijo */
     height: auto; /* Altura fija */
-    margin: 15rem auto; /* Centrado horizontal */
+    margin: 10rem auto; /* Centrado horizontal */
     display: flex;
     align-items: center;
     justify-content: center;
