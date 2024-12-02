@@ -11,3 +11,6 @@
     padding: 1rem;
     font-weight:  700;
 }
+.botonEliminar{
+    cursor: pointer;
+}

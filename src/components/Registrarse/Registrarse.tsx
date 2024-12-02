@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import * as API from '../../services/api';
 import Swal from "sweetalert2";
+import { useNavigate } from 'react-router-dom';
+
 
 export const Registrarse: React.FC = () => {
+    const navigate = useNavigate();
+
 
     const [usuario, setUsuario] = useState({
         Nombres: '',
@@ -63,6 +67,7 @@ export const Registrarse: React.FC = () => {
                     title: 'Registro exitoso',
                     text: 'El usuario ha sido registrado correctamente.',
                 });
+                navigate('/dashboard');
             } else {
                 throw new Error('No se pudo registrar el usuario.');
             }
@@ -83,66 +88,36 @@ export const Registrarse: React.FC = () => {
     return (
         <form className="form" onSubmit={handleRegistrarse}>
             <h3>Crear usuario</h3>
-            <div className="form-cont-campo">
-                <label htmlFor="">Nombres</label>
-                <input
-                    type="text"
-                    placeholder="Tu Nombre"
-                    id="nombre"
-                    name="Nombres"
-                    value={usuario.Nombres}
-                    onChange={handleChange}
-                    required
-                />
+            <div className="form-cont-campos">
+                {["Nombres", "Apellidos", "Correo", "Celular"].map((campo) =>
+                    <div className="form-cont-campo" key={campo}>
+                        <label>{campo}</label>
+                        <input
+                            type="text"
+                            placeholder={`Ingrese ${campo.toLowerCase()}`}
+                            name={campo}
+                            value={(usuario as any)[campo]}
+                            onChange={handleChange}
+                            required
+                        />
+
+                    </div>
+                )}
+                <div className="form-cont-campo">
+                    <label htmlFor="">Clave</label>
+                    <input
+                        type="password"
+                        placeholder="Tu clave"
+                        id="clave"
+                        name="Clave"
+                        value={usuario.Clave}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
             </div>
-            <div className="form-cont-campo">
-                <label htmlFor="">Apellidos</label>
-                <input
-                    type="text"
-                    placeholder="Tu Apellido"
-                    id="apellidos"
-                    name="Apellidos"
-                    value={usuario.Apellidos}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div className="form-cont-campo">
-                <label htmlFor="">Correo</label>
-                <input
-                    type="email"
-                    placeholder="Tu Correo"
-                    id="correo"
-                    name="Correo"
-                    value={usuario.Correo}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div className="form-cont-campo">
-                <label htmlFor="">Celular</label>
-                <input
-                    type="number"
-                    placeholder="Tu Numero"
-                    id="celular"
-                    name="Celular"
-                    value={usuario.Celular}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div className="form-cont-campo">
-                <label htmlFor="">Clave</label>
-                <input
-                    type="password"
-                    placeholder="Tu clave"
-                    id="clave"
-                    name="Clave"
-                    value={usuario.Clave}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
+
             <button className="form--button" type="submit">Guardar</button><br />
             {error && <p>{error}</p>}
         </form>

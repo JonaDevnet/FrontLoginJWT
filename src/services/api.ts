@@ -1,5 +1,46 @@
 const URL: string = 'http://localhost:5082/api/';
 
+/// Utilidad para manejar solicitudes con token
+async function fetchWithTokenRetry(input: RequestInfo, init?: RequestInit): Promise<Response> {
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (!accessToken) {
+        throw new Error('No hay un token de acceso válido. Por favor, inicia sesión.');
+    }
+
+    const authInit = {
+        ...init,
+        headers: {
+            ...init?.headers,
+            Authorization: `Bearer ${accessToken}`,
+        },
+    };
+
+    let response = await fetch(input, authInit);
+
+    if (response.status === 401) { // Token expirado
+        console.warn('Token expirado. Intentando renovar...');
+        await refreshAccessToken();
+
+        const newAccessToken = sessionStorage.getItem('accessToken');
+        if (!newAccessToken) {
+            throw new Error('No se pudo renovar el token.');
+        }
+
+        response = await fetch(input, {
+            ...authInit,
+            headers: {
+                ...authInit.headers,
+                Authorization: `Bearer ${newAccessToken}`,
+            },
+        });
+    }
+
+    if (!response.ok) {
+        throw new Error(`Error en la solicitud: ${response.statusText}`);
+    }
+
+    return response;
+}
 
 /// Registrar un nuevo usuario
 interface UsuarioRequest {
@@ -16,14 +57,15 @@ export async function registrarse(usuario: UsuarioRequest) {
         Apellido: usuario.Apellidos,
         Correo: usuario.Correo,
         NumeroCelular: usuario.Celular,
-        Clave: usuario.Clave
+        Clave: usuario.Clave,
     };
+
     try {
         const response = await fetch(URL + 'Auth/Registrarse', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
         });
 
@@ -64,57 +106,57 @@ export async function login(correo: string, password: string): Promise<{ accessT
     }
 }
 
-/// Obtener vehículos con autenticación
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getVehiculos(): Promise<any> {
-    const accessToken = sessionStorage.getItem('accessToken');
+/// Crear un nuevo vehículo
+interface VehiculosRequest {
+    Tipo: string;
+    Patente: string;
+    Marca: string;
+    Modelo: string;
+    Anio: number;
+}
 
-    if (!accessToken) {
-        throw new Error('No hay un token de acceso válido. Por favor, inicia sesión.');
-    }
+export async function nuevovehiculo(vehiculo: VehiculosRequest) {
+    const data = {
+        Tipo: vehiculo.Tipo,
+        Patente: vehiculo.Patente,
+        Marca: vehiculo.Marca,
+        Modelo: vehiculo.Modelo,
+        Anio: vehiculo.Anio,
+    };
 
     try {
-        const response = await fetch(`${URL}Vehiculos/Lista`, {
-            method: 'GET',
+        const response = await fetchWithTokenRetry(URL + 'Vehiculos/NuevoVehiculo', {
+            method: 'POST',
+            body: JSON.stringify(data),
             headers: {
-                Authorization: `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
             },
         });
 
-        if (!response.ok) {
-            // Si el token está expirado o la solicitud falla
-            if (response.status === 401) {
-                console.warn('Token expirado. Intentando renovar...');
-                await refreshAccessToken();
+        return response.json();
+    } catch (error) {
+        console.error('Error en la creación:', error);
+        throw new Error('No se pudo crear el vehículo.');
+    }
+}
 
-                // Intentar la solicitud nuevamente con el nuevo token
-                const newAccessToken = sessionStorage.getItem('accessToken');
-                if (!newAccessToken) throw new Error('No se pudo renovar el token.');
+/// Obtener lista de vehículos
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getVehiculos(): Promise<any> {
+    try {
+        const response = await fetchWithTokenRetry(`${URL}Vehiculos/Lista`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-                const retryResponse = await fetch(`${URL}Vehiculos/Lista`, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${newAccessToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!retryResponse.ok) throw new Error('Error al reintentar la solicitud.');
-
-                return await retryResponse.json();
-            } else {
-                throw new Error('Error al obtener los vehículos.');
-            }
-        }
-
-        return await response.json();
+        return response.json();
     } catch (error) {
         console.error('Error al obtener los vehículos:', error);
         throw error;
     }
 }
-
 
 /// Renovar token de acceso
 export async function refreshAccessToken(): Promise<void> {
@@ -135,7 +177,6 @@ export async function refreshAccessToken(): Promise<void> {
         throw error;
     }
 }
-
 
 /// Configurar la renovación automática de tokens
 function getTokenExpiration(accessToken: string): number | null {
@@ -168,3 +209,56 @@ export function setupTokenAutoRefresh(): void {
         }, refreshTime);
     }
 }
+
+// Eliminar Vehiculo
+
+export async function EliminarVehiculo(id: number) {
+    try {
+        const response = await fetchWithTokenRetry(`${URL}Vehiculos/EliminarVehiculo?id=${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.json();
+    } catch (error) {
+        console.error('Error al eliminar el vehículo:', error);
+        throw error;
+    }
+}
+
+interface VehiculosRequesteEdit {
+    IdVehiculo: number,
+    Tipo: string;
+    Patente: string;
+    Marca: string;
+    Modelo: string;
+    Anio: number;
+}
+export async function EditarVehiculo(vehiculo: VehiculosRequesteEdit) {
+    console.log('vehiculo en api', vehiculo)
+    const data = {
+        IdVehiculo: vehiculo.IdVehiculo,
+        Tipo: vehiculo.Tipo,
+        Patente: vehiculo.Patente,
+        Marca: vehiculo.Marca,
+        Modelo: vehiculo.Modelo,
+        Anio: vehiculo.Anio,
+    };
+    console.log('llamado a api: data =', data)
+    try {
+        const response = await fetchWithTokenRetry(`${URL}Vehiculos/EditarVehiculo` , {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        console.log('respuesta del llamado', response)
+        return response.json();
+    } catch (error) {
+        console.error('Error al editar el vehículo:', error);
+        throw error;
+    }
+}
+

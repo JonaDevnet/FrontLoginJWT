@@ -1,7 +1,6 @@
-
 .form {
-    width: 500px; /* Ancho fijo */
-    height: auto; /* Altura fija */
+    width: 600px; /* Ancho fijo */
+    height: 600px; /* Altura fija */
     margin: 10rem auto; /* Centrado horizontal */
     display: flex;
     align-items: center;
@@ -9,7 +8,6 @@
     flex-direction: column;
     box-shadow: 1px -1px 7px -1px rgba(0,0,0,1);
     border-radius: 2rem;
-    font-family: "Doto", sans-serif;
 }
 .form-text h3{
     text-align: center;
